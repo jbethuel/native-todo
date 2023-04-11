@@ -22,11 +22,20 @@ private var todos = [
 
 
 struct ContentView: View {
+    @State private var text: String = ""
+    @State private var todos = [
+        Todo(name: "Wake Up"),
+        Todo(name: "Make bed"),
+        Todo(name: "Wash face and brush"),
+        Todo(name: "Cook"),
+        Todo(name: "Eat")
+    ]
+    
     var body: some View {
         VStack {
-            VStack {
-                ScrollView {
-                    ForEach(todos, id: \.id) { todo in
+            ScrollView {
+                ForEach(todos, id: \.id) { todo in
+                    VStack {
                         HStack {
                             Text(todo.name)
                             Toggle(isOn: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Is On@*/.constant(true)/*@END_MENU_TOKEN@*/) {
@@ -35,11 +44,14 @@ struct ContentView: View {
                     }
                 }
             }
-            
             HStack {
-                TextField(/*@START_MENU_TOKEN@*/"Add a todo"/*@END_MENU_TOKEN@*/, text: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Value@*/.constant("")/*@END_MENU_TOKEN@*/)
+                TextField("Add a todo", text: $text).textInputAutocapitalization(.never).autocorrectionDisabled(true).onSubmit{
+                    todos.append(Todo(name: text))
+                    text = ""
+                }
                 Button("Submit") {
-                    /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Action@*/ /*@END_MENU_TOKEN@*/
+                    todos.append(Todo(name: text))
+                    text = ""
                 }
             }
             
