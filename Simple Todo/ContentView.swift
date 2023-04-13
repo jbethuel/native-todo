@@ -7,38 +7,39 @@
 
 import SwiftUI
 
+
 struct Todo: Identifiable {
-    let name: String
     let id = UUID()
+    var name: String
+    var isCompleted: Bool
 }
 
-private var todos = [
-    Todo(name: "Wake Up"),
-    Todo(name: "Make bed"),
-    Todo(name: "Wash face and brush"),
-    Todo(name: "Cook"),
-    Todo(name: "Eat")
-]
-
+class TodoViewModel: ObservableObject {
+    @Published var todos: [Todo] = []
+    init() {
+        self.todos = [
+            Todo(name: "Wake Up", isCompleted: false),
+            Todo(name: "Make bed", isCompleted: false),
+            Todo(name: "Wash face and brush", isCompleted: false),
+            Todo(name: "Cook", isCompleted: false),
+            Todo(name: "Eat", isCompleted: false)
+        ]
+    }
+}
 
 struct ContentView: View {
-    @State private var text: String = ""
-    @State private var todos = [
-        Todo(name: "Wake Up"),
-        Todo(name: "Make bed"),
-        Todo(name: "Wash face and brush"),
-        Todo(name: "Cook"),
-        Todo(name: "Eat")
-    ]
     
+    @State private var text: String = ""
+    @StateObject var viewModel = TodoViewModel()
+
     var body: some View {
         VStack {
             ScrollView {
-                ForEach(todos, id: \.id) { todo in
+                ForEach($viewModel.todos, id: \.id) { $todo in
                     VStack {
                         HStack {
                             Text(todo.name)
-                            Toggle(isOn: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Is On@*/.constant(true)/*@END_MENU_TOKEN@*/) {
+                            Toggle(isOn: $todo.isCompleted) {
                             }.padding(.trailing)
                         }
                     }
@@ -46,11 +47,11 @@ struct ContentView: View {
             }
             HStack {
                 TextField("Add a todo", text: $text).textInputAutocapitalization(.never).autocorrectionDisabled(true).onSubmit{
-                    todos.append(Todo(name: text))
+                    viewModel.todos.append(Todo(name: text, isCompleted: false))
                     text = ""
                 }
                 Button("Submit") {
-                    todos.append(Todo(name: text))
+                    viewModel.todos.append(Todo(name: text, isCompleted: false))
                     text = ""
                 }
             }
